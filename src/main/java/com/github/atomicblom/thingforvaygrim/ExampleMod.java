@@ -7,32 +7,23 @@ import net.minecraft.client.gui.Gui;
 import net.minecraft.client.gui.GuiIngame;
 import net.minecraft.client.renderer.GLAllocation;
 import net.minecraft.client.renderer.GlStateManager;
-import net.minecraft.client.renderer.Tessellator;
-import net.minecraft.client.renderer.VertexBuffer;
-import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
-import net.minecraft.client.renderer.vertex.VertexFormat;
 import net.minecraftforge.client.event.RenderPlayerEvent;
-import net.minecraftforge.client.event.RenderWorldLastEvent;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.common.util.EnumHelper;
 import net.minecraftforge.event.world.WorldEvent;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.common.Mod.EventHandler;
 import net.minecraftforge.fml.common.event.FMLPostInitializationEvent;
+import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
+import org.lwjgl.opengl.ARBShaderObjects;
 import org.lwjgl.opengl.GL11;
-import org.lwjgl.util.glu.Project;
-
 import java.lang.reflect.Field;
 import java.nio.FloatBuffer;
 import java.nio.IntBuffer;
 import java.util.List;
-
-import static org.lwjgl.opengl.GL11.GL_MODELVIEW_MATRIX;
-import static org.lwjgl.opengl.GL11.GL_PROJECTION_MATRIX;
-import static org.lwjgl.opengl.GL11.GL_VIEWPORT;
 
 @Mod(modid = ExampleMod.MOD_ID, version = ExampleMod.VERSION, clientSideOnly = true)
 public class ExampleMod
@@ -40,11 +31,59 @@ public class ExampleMod
     public static final String MOD_ID = "thingforvaygrim";
     public static final String VERSION = "1.0";
 
-    /*@EventHandler
+    @EventHandler
+    @SideOnly(Side.CLIENT)
     public void preInit(FMLPreInitializationEvent event) {
-        event.getSuggestedConfigurationFile();
-    }*/
+        //event.getSuggestedConfigurationFile();
+        ShaderHelper.initShaders();
+    }
 
+    public static final float DEFAULT_GRAIN_INTENSITY = 0.05F;
+    public static final float DEFAULT_DISFIGURATION = 0.025F;
+
+    public static float grainIntensity = DEFAULT_GRAIN_INTENSITY;
+    public static float disfiguration = DEFAULT_DISFIGURATION;
+
+    private static final FloatBuffer intBuffer = GLAllocation.createDirectFloatBuffer(3);
+
+    public static final ShaderCallback callback = new ShaderCallback() {
+        @Override
+        public void call(int shader)
+        {
+            intBuffer.clear();
+            //GlStateManager.glGetInteger(GL11.GL_VIEWPORT, intBuffer);
+            intBuffer.put(Minecraft.getMinecraft().displayWidth);
+            intBuffer.put(Minecraft.getMinecraft().displayWidth);
+            intBuffer.put(0);
+            intBuffer.flip();
+            //intBuffer.flip().limit(16);
+
+            int disfigurationUniform = ARBShaderObjects.glGetUniformLocationARB(shader, "disfiguration");
+            ARBShaderObjects.glUniform1fARB(disfigurationUniform, disfiguration);
+
+            // Vert Uniforms
+            /*int grainIntensityUniform = ARBShaderObjects.glGetUniformLocationARB(shader, "grainIntensity");
+            ARBShaderObjects.glUniform1fARB(grainIntensityUniform, grainIntensity);*/
+            int uniform = ARBShaderObjects.glGetUniformLocationARB(shader, "iResolution");
+            ARBShaderObjects.glUniform3ARB(uniform, intBuffer);
+        }
+    };
+
+
+    @SideOnly(Side.CLIENT)
+    @SubscribeEvent
+    public void preRenderPlayerEvent(RenderPlayerEvent.Pre event) {
+        ShaderHelper.useShader(ShaderHelper.doppleganger, callback);
+    }
+
+    @SideOnly(Side.CLIENT)
+    @SubscribeEvent
+    public void postRenderPlayerEvent(RenderPlayerEvent.Post event) {
+        ShaderHelper.releaseShader();
+    }
+
+    /*
+    Stencil buffer experiment
     @SideOnly(Side.CLIENT)
     @SubscribeEvent
     public void preEntityRender(RenderPlayerEvent.Pre event) {
@@ -88,14 +127,8 @@ public class ExampleMod
 
         intBuffer.flip().limit(16);
 
-        //get winZ for gluUnProject
-        /*GL11.glReadPixels(1, 1, 1, 1, GL11.GL_DEPTH_COMPONENT, GL11.GL_FLOAT, temp );
-        this.temp.flip().limit(16);
-        float[] temp2 = new float[16];
-        temp.get(temp2);*/
-
-        boolean tlResult = Project.gluUnProject(0, 0, 0.5f, modelviewMatrixBuffer, projectionMatrixBuffer, intBuffer, topLeftResults);
-        boolean trResult = Project.gluUnProject(1, 1, 0.5f, modelviewMatrixBuffer, projectionMatrixBuffer, intBuffer, bottomRightResults);
+        boolean tlResult = Project.gluUnProject(0, 0, 0.1f, modelviewMatrixBuffer, projectionMatrixBuffer, intBuffer, topLeftResults);
+        boolean trResult = Project.gluUnProject(1, 1, 0.1f, modelviewMatrixBuffer, projectionMatrixBuffer, intBuffer, bottomRightResults);
         float[] tl = new float[3];
         float[] br = new float[3];
 
@@ -105,14 +138,6 @@ public class ExampleMod
         //GL11.glStencilFunc(GL11.GL_ALWAYS, 1, 0xFF);
         //GL11.glStencilMask(0xFF);
         GL11.glDisable(GL11.GL_DEPTH_TEST);
-
-        //final VertexBuffer buffer = Tessellator.getInstance().getBuffer();
-        /*buffer.begin(GL11.GL_QUADS, DefaultVertexFormats.POSITION_COLOR);
-        buffer.pos(tl[0], tl[1], tl[2]).color(255, 0, 0, 0).endVertex();
-        buffer.pos(br[0], tl[1], tl[2]).color(255, 255, 0, 0).endVertex();
-        buffer.pos(tl[0], br[1], br[2]).color(255, 0, 255, 0).endVertex();
-        buffer.pos(br[0], br[1], br[2]).color(0, 255, 0, 0).endVertex();
-        buffer.finishDrawing();*/
 
         // set the color of the quad (R,G,B,A)
         GL11.glColor3f(0.5f,0.5f,1.0f);
@@ -128,7 +153,7 @@ public class ExampleMod
         //GL11.glStencilMask(0xFF);
         GL11.glEnable(GL11.GL_DEPTH_TEST);
     }
-
+    */
     @EventHandler
     public void postInit(FMLPostInitializationEvent event)
     {
