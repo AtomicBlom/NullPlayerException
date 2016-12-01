@@ -86,17 +86,22 @@ vec3 edge(sampler2D sampler, vec2 uv, float sampleSize)
     ).rgb / 2.0 - texture2D(sampler, uv).rgb;
 }
 
-vec3 distort(sampler2D sampler, vec2 uv, float edgeSize)
+vec4 distort(sampler2D sampler, vec2 uv, float edgeSize)
 {
     vec2 pixel = vec2(1.0) / iResolution.xy;
     vec3 field = rgb2hsv(edge(sampler, uv, edgeSize));
     vec2 distort = pixel * sin((field.rb) * PI * 2.0);
     float shiftx = noise(vec2(quantize(uv.y + 31.5, iResolution.y / TILE_SIZE) * iGlobalTime, fract(iGlobalTime) * 300.0));
     float shifty = noise(vec2(quantize(uv.x + 11.5, iResolution.x / TILE_SIZE) * iGlobalTime, fract(iGlobalTime) * 100.0));
-    vec3 rgb = texture2D(sampler, uv + (distort + (pixel - pixel / 2.0) * vec2(shiftx, shifty) * (50.0 + 100.0 * Amount)) * Amount).rgb;
-    vec3 hsv = rgb2hsv(rgb);
+    vec4 rgb = texture2D(sampler, uv + (distort + (pixel - pixel / 2.0) * vec2(shiftx, shifty) * (50.0 + 100.0 * Amount)) * Amount).rgba;
+    vec3 hsv = rgb2hsv(vec3(rgb));
     hsv.y = mod(hsv.y + shifty * pow(Amount, 5.0) * 0.25, 1.0);
-    return posterize(hsv2rgb(hsv), floor(mix(256.0, pow(1.0 - hsv.z - 0.5, 2.0) * 64.0 * shiftx + 4.0, 1.0 - pow(1.0 - Amount, 5.0))));
+    return vec4(
+        posterize(
+            hsv2rgb(hsv),
+            floor(mix(256.0, pow(1.0 - hsv.z - 0.5, 2.0) * 64.0 * shiftx + 4.0, 1.0 - pow(1.0 - Amount, 5.0))))
+            ,
+        rgb.w);
 }
 
 void main()
@@ -105,6 +110,7 @@ void main()
 	vec2 uv = gl_FragCoord.xy / iResolution.xy;
     wow = clamp(mod(noise(time + uv.y), 1.0), 0.0, 1.0) * 2.0 - 1.0;
     vec3 finalColor;
-    finalColor += distort(bgl_RenderedTexture, uv, 8.0);
-    gl_FragColor = vec4(finalColor, 1.0);
+    vec4 distortResult = distort(bgl_RenderedTexture, uv, 8.0);
+    finalColor += distortResult.xyz;
+    gl_FragColor = vec4(finalColor, distortResult.w);
 }
