@@ -1,6 +1,6 @@
-package com.github.atomicblom.thingforvaygrim.client.gui;
+package com.github.atomicblom.nullplayerexception.client.gui;
 
-import com.github.atomicblom.thingforvaygrim.Logger;
+import com.github.atomicblom.nullplayerexception.Logger;
 import com.google.common.base.Optional;
 import com.google.common.collect.Lists;
 import net.minecraft.client.Minecraft;

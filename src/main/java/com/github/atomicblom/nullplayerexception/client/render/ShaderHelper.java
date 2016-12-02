@@ -8,11 +8,12 @@
  *
  * File Created @ [Apr 9, 2014, 11:20:26 PM (GMT)]
  */
-package com.github.atomicblom.thingforvaygrim.client.render;
+package com.github.atomicblom.nullplayerexception.client.render;
 
-import com.github.atomicblom.thingforvaygrim.client.ClientTickHandler;
-import com.github.atomicblom.thingforvaygrim.Logger;
-import com.github.atomicblom.thingforvaygrim.client.LibResources;
+import com.github.atomicblom.nullplayerexception.client.ClientTickHandler;
+import com.github.atomicblom.nullplayerexception.Logger;
+import com.github.atomicblom.nullplayerexception.client.LibResources;
+import com.github.atomicblom.nullplayerexception.configuration.Settings;
 import net.minecraft.client.renderer.OpenGlHelper;
 import org.apache.commons.io.IOUtils;
 import org.lwjgl.opengl.ARBFragmentShader;
@@ -60,8 +61,7 @@ public final class ShaderHelper {
     }
 
     public static boolean useShaders() {
-        //ConfigHandler.useShaders &&
-        return OpenGlHelper.shadersSupported;
+        return Settings.enableShaders() && OpenGlHelper.shadersSupported;
     }
 
     // Most of the code taken from the LWJGL wiki

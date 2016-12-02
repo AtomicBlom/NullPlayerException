@@ -1,4 +1,4 @@
-package com.github.atomicblom.thingforvaygrim.client.gui;
+package com.github.atomicblom.nullplayerexception.client.gui;
 
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiIngame;

@@ -1,4 +1,4 @@
-package com.github.atomicblom.thingforvaygrim.client.render;
+package com.github.atomicblom.nullplayerexception.client.render;
 
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.GLAllocation;

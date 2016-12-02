@@ -8,7 +8,7 @@ uniform vec3 iResolution;
 #define PI 3.14159265
 #define TILE_SIZE 16.0
 
-precision highp float;
+//precision highp float;
 
 float wow;
 float Amount = 1.0;

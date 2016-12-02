@@ -1,4 +1,4 @@
-package com.github.atomicblom.thingforvaygrim;
+package com.github.atomicblom.nullplayerexception;
 
 import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.LogManager;
@@ -45,7 +45,7 @@ public enum Logger
     {
         if (logger == null)
         {
-            logger = LogManager.getLogger(CorruptedMod.MOD_ID);
+            logger = LogManager.getLogger(NullPlayerExceptionMod.MOD_ID);
         }
     }
 

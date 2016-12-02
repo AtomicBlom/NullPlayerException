@@ -1,7 +1,7 @@
 [
 {
-  "modid": "corrupted",
-  "name": "The Corrupted",
+  "modid": "nullplayerexception",
+  "name": "Null Player Exception",
   "description": "Corrupts and hides players for the purpose of storytelling",
   "version": "${version}",
   "mcversion": "${mcversion}",

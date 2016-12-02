@@ -8,7 +8,7 @@
  *
  * File Created @ [Oct 29, 2014, 6:31:35 PM (GMT)]
  */
-package com.github.atomicblom.thingforvaygrim.client.render;
+package com.github.atomicblom.nullplayerexception.client.render;
 
 /**
  * A Callback for when a shader is called. Used to define shader uniforms.
