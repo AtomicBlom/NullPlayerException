@@ -1,6 +1,5 @@
 package com.github.atomicblom.thingforvaygrim;
 
-import com.github.atomicblom.thingforvaygrim.ExampleMod;
 import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.LogManager;
 
@@ -46,7 +45,7 @@ public enum Logger
     {
         if (logger == null)
         {
-            logger = LogManager.getLogger(ExampleMod.MOD_ID);
+            logger = LogManager.getLogger(CorruptedMod.MOD_ID);
         }
     }
 

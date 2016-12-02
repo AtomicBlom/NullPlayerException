@@ -8,8 +8,10 @@
  *
  * File Created @ [Apr 9, 2014, 11:20:26 PM (GMT)]
  */
-package com.github.atomicblom.thingforvaygrim;
+package com.github.atomicblom.thingforvaygrim.client;
 
+import com.github.atomicblom.thingforvaygrim.ClientTickHandler;
+import com.github.atomicblom.thingforvaygrim.Logger;
 import net.minecraft.client.renderer.OpenGlHelper;
 import org.apache.commons.io.IOUtils;
 import org.lwjgl.opengl.ARBFragmentShader;
@@ -24,13 +26,13 @@ public final class ShaderHelper {
     private static final int VERT = ARBVertexShader.GL_VERTEX_SHADER_ARB;
     private static final int FRAG = ARBFragmentShader.GL_FRAGMENT_SHADER_ARB;
 
-    public static int doppleganger = 0;
+    public static int corrupted = 0;
 
     public static void initShaders() {
         if(!useShaders())
             return;
 
-        doppleganger = createProgram(LibResources.SHADER_DOPLLEGANGER_VERT, LibResources.SHADER_DOPLLEGANGER_FRAG);
+        corrupted = createProgram(LibResources.SHADER_DOPLLEGANGER_VERT, LibResources.SHADER_DOPLLEGANGER_FRAG);
     }
 
     public static void useShader(int shader, ShaderCallback callback) {
