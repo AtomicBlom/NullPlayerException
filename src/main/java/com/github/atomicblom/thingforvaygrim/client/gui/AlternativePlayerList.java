@@ -1,4 +1,4 @@
-package com.github.atomicblom.thingforvaygrim;
+package com.github.atomicblom.thingforvaygrim.client.gui;
 
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiIngame;

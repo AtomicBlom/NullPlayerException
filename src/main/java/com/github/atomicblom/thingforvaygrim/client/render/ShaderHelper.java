@@ -8,10 +8,11 @@
  *
  * File Created @ [Apr 9, 2014, 11:20:26 PM (GMT)]
  */
-package com.github.atomicblom.thingforvaygrim.client;
+package com.github.atomicblom.thingforvaygrim.client.render;
 
-import com.github.atomicblom.thingforvaygrim.ClientTickHandler;
+import com.github.atomicblom.thingforvaygrim.client.ClientTickHandler;
 import com.github.atomicblom.thingforvaygrim.Logger;
+import com.github.atomicblom.thingforvaygrim.client.LibResources;
 import net.minecraft.client.renderer.OpenGlHelper;
 import org.apache.commons.io.IOUtils;
 import org.lwjgl.opengl.ARBFragmentShader;

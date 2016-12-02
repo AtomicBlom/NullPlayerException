@@ -8,7 +8,7 @@
  *
  * File Created @ [Feb 3, 2014, 9:59:17 PM (GMT)]
  */
-package com.github.atomicblom.thingforvaygrim;
+package com.github.atomicblom.thingforvaygrim.client;
 
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiScreen;

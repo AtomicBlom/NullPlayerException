@@ -1,4 +1,4 @@
-package com.github.atomicblom.thingforvaygrim.client;
+package com.github.atomicblom.thingforvaygrim.client.render;
 
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.GLAllocation;
