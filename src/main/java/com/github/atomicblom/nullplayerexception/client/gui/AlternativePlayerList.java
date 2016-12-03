@@ -1,5 +1,6 @@
 package com.github.atomicblom.nullplayerexception.client.gui;
 
+import com.github.atomicblom.nullplayerexception.NullPlayerExceptionMod;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiIngame;
 import net.minecraft.client.gui.GuiPlayerTabOverlay;
@@ -18,7 +19,7 @@ public class AlternativePlayerList extends GuiPlayerTabOverlay {
 
         String name = networkPlayerInfoIn.getGameProfile().getName();
         boolean isObfuscated = false;
-        if (name.toLowerCase().equals("lynxofcp")) {
+        if (NullPlayerExceptionMod.corruptedPlayerNames.contains(name.toLowerCase())) {
             isObfuscated = true;
         }
 

@@ -18,7 +18,7 @@ import java.util.List;
 public class ReplaceGuiEvent
 {
     @SubscribeEvent
-    public void loadWorldEvent(WorldEvent.Load onWorldLoaded) {
+    public static void loadWorldEvent(WorldEvent.Load onWorldLoaded) {
         Minecraft minecraft = Minecraft.getMinecraft();
         GuiIngame ingameGUI = minecraft.ingameGUI;
         if (minecraft.ingameGUI == null) {
@@ -32,7 +32,7 @@ public class ReplaceGuiEvent
         setMinecraftField(minecraft.ingameGUI, Gui.class, new AlternativePlayerList(minecraft, ingameGUI), "overlayPlayerList", "field_175196_v");
     }
 
-    private void setMinecraftField(Object obj, Class<?> expectedClazz, Object newValue, String develName, String obfuscated) {
+    private static void setMinecraftField(Object obj, Class<?> expectedClazz, Object newValue, String develName, String obfuscated) {
         Class<?> clazz = obj.getClass();
         Logger.info("Finding field %s in class %s", develName, clazz.getName());
 

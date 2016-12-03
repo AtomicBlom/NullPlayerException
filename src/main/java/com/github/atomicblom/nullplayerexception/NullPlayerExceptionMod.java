@@ -14,7 +14,6 @@ import net.minecraftforge.fml.common.event.FMLServerStartingEvent;
 import net.minecraftforge.fml.common.network.NetworkRegistry;
 import net.minecraftforge.fml.common.network.simpleimpl.SimpleNetworkWrapper;
 import net.minecraftforge.fml.relauncher.Side;
-
 import java.util.Collections;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
@@ -28,7 +27,7 @@ public class NullPlayerExceptionMod
 
     public static final SimpleNetworkWrapper CHANNEL = NetworkRegistry.INSTANCE.newSimpleChannel(MOD_ID);
 
-    public static final Set<String> corruptedPlayers = Collections.newSetFromMap(new ConcurrentHashMap());
+    public static final Set<String> corruptedPlayerNames = Collections.newSetFromMap(new ConcurrentHashMap<String, Boolean>(32));
 
     @SidedProxy(
             modId = MOD_ID,
@@ -45,7 +44,7 @@ public class NullPlayerExceptionMod
         renderProxy.registerRenderers();
     }
 
-    @Mod.EventHandler
+    @EventHandler
     public void onServerStarting(FMLServerStartingEvent event) {
         event.registerServerCommand(new CorruptPlayerCommand());
         event.registerServerCommand(new RepairPlayerCommand());

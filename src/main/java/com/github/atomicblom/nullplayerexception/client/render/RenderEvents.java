@@ -1,7 +1,11 @@
 package com.github.atomicblom.nullplayerexception.client.render;
 
+import com.github.atomicblom.nullplayerexception.NullPlayerExceptionMod;
+import com.mojang.authlib.GameProfile;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.GLAllocation;
+import net.minecraft.entity.player.EntityPlayer;
+import net.minecraftforge.client.event.RenderHandEvent;
 import net.minecraftforge.client.event.RenderPlayerEvent;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
@@ -42,16 +46,61 @@ public class RenderEvents
         }
     };
 
+    private static boolean isRunningShader = false;
+    private static String playerName;
+    private static boolean alwaysRenderNameTag = false;
 
     @SideOnly(Side.CLIENT)
     @SubscribeEvent
     public static void preRenderPlayerEvent(RenderPlayerEvent.Pre event) {
-        ShaderHelper.useShader(ShaderHelper.corrupted, callback);
+        final EntityPlayer entityPlayer = event.getEntityPlayer();
+        GameProfile currentGameProfile = entityPlayer.getGameProfile();
+        playerName = currentGameProfile.getName().toLowerCase();
+        if (NullPlayerExceptionMod.corruptedPlayerNames.contains(playerName))
+        {
+            isRunningShader = true;
+            alwaysRenderNameTag = entityPlayer.getAlwaysRenderNameTagForRender();
+            entityPlayer.setAlwaysRenderNameTag(false);
+            entityPlayer.setCustomNameTag("");
+            ShaderHelper.useShader(ShaderHelper.corrupted, callback);
+        } else {
+            isRunningShader = false;
+        }
+
     }
 
     @SideOnly(Side.CLIENT)
     @SubscribeEvent
     public static void postRenderPlayerEvent(RenderPlayerEvent.Post event) {
-        ShaderHelper.releaseShader();
+        if (isRunningShader)
+        {
+            final EntityPlayer entityPlayer = event.getEntityPlayer();
+            ShaderHelper.releaseShader();
+            entityPlayer.setAlwaysRenderNameTag(alwaysRenderNameTag);
+            isRunningShader = false;
+        }
     }
+
+    @SideOnly(Side.CLIENT)
+    @SubscribeEvent
+    public static void onTryRenderPlayerName(RenderPlayerEvent.Specials.Pre event) {
+        final EntityPlayer entityPlayer = event.getEntityPlayer();
+        final GameProfile currentGameProfile = entityPlayer.getGameProfile();
+        playerName = currentGameProfile.getName();
+        if (NullPlayerExceptionMod.corruptedPlayerNames.contains(playerName)) {
+            event.setCanceled(true);
+        }
+    }
+
+    //There aren't pre/post events for this to enable/disable the shader.
+    /*
+    @SideOnly(Side.CLIENT)
+    @SubscribeEvent
+    public static void renderHand(RenderHandEvent event) {
+        final String name = Minecraft.getMinecraft().getConnection().getGameProfile().getName();
+        if (NullPlayerExceptionMod.corruptedPlayerNames.contains(name)) {
+            ShaderHelper.useShader(ShaderHelper.corrupted, callback);
+        }
+    }
+    */
 }
