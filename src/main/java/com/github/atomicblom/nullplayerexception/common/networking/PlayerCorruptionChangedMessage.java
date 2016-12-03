@@ -10,6 +10,7 @@ import java.util.List;
 
 public class PlayerCorruptionChangedMessage implements IMessage
 {
+    private boolean firstConnect;
     private boolean areCorrupted;
     private List<String> playerNames;
 
@@ -20,11 +21,13 @@ public class PlayerCorruptionChangedMessage implements IMessage
     {
         this.playerNames = Lists.newArrayList(playerName);
         this.areCorrupted = isCorrupted;
+        this.firstConnect = false;
     }
 
     public PlayerCorruptionChangedMessage(List<String> playerNames, boolean areCorrupted)
     {
         this.playerNames = playerNames;
+        this.firstConnect = true;
         this.areCorrupted = areCorrupted;
     }
 
@@ -37,6 +40,7 @@ public class PlayerCorruptionChangedMessage implements IMessage
         for (int i = 0; i < length; i++) {
             playerNames.add(ByteBufUtils.readUTF8String(buf));
         }
+        this.firstConnect = buf.readBoolean();
     }
 
     @Override
@@ -47,9 +51,12 @@ public class PlayerCorruptionChangedMessage implements IMessage
         for (String playerName : playerNames) {
             ByteBufUtils.writeUTF8String(buf, playerName);
         }
+        buf.writeBoolean(firstConnect);
     }
 
     boolean areCorrupted() { return areCorrupted; }
+
+    boolean isFirstConnect() { return firstConnect; }
 
     List<String> getPlayers() { return playerNames; }
 

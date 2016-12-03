@@ -30,10 +30,4 @@ public class PlayerEvents {
         List<String> obfuscatedPlayers = Settings.INSTANCE.getObfuscatedPlayers();
         NullPlayerExceptionMod.CHANNEL.sendTo(new PlayerCorruptionChangedMessage(obfuscatedPlayers, true), (EntityPlayerMP) event.getEntity());
     }
-
-    @SubscribeEvent
-    public static void OnJoined(FMLNetworkEvent.ClientConnectedToServerEvent event) {
-        Logger.info("Clearing corrupted Player List");
-        NullPlayerExceptionMod.corruptedPlayers.clear();
-    }
 }
