@@ -61,7 +61,7 @@ public final class ShaderHelper {
     }
 
     public static boolean useShaders() {
-        return Settings.enableShaders() && OpenGlHelper.shadersSupported;
+        return Settings.INSTANCE.enableShaders() && OpenGlHelper.shadersSupported;
     }
 
     // Most of the code taken from the LWJGL wiki

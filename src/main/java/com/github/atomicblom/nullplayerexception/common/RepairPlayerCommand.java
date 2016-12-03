@@ -38,7 +38,7 @@ public class RepairPlayerCommand extends CommandBase {
             throw new WrongUsageException("commands.npe.repair.usage");
         }
 
-        if (!Settings.removeObfuscatedPlayer(args[0])) {
+        if (!Settings.INSTANCE.removeObfuscatedPlayer(args[0])) {
             Logger.warning("Attempt to mark %s as not corrupted, but they weren't in the list of corrupted players.", args[0]);
             notifyCommandListener(sender, this, "commands.npe.repair.playernotcorrupted", args[0]);
         } else {

@@ -38,7 +38,7 @@ public class CorruptPlayerCommand extends CommandBase{
             throw new WrongUsageException("commands.npe.corrupt.usage");
         }
 
-        if (!Settings.addObfuscatedPlayer(args[0])) {
+        if (!Settings.INSTANCE.addObfuscatedPlayer(args[0])) {
             Logger.warning("Attempt to mark %s as corrupted, but they were already corrupt.", args[0]);
         } else {
             Logger.info("%s was marked as corrupted.", args[0]);

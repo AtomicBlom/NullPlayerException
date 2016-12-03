@@ -16,38 +16,45 @@ public enum Settings
     private boolean enableShaders = false;
     private List<String> obfuscatedPlayers = Lists.newArrayList();
     private Property obfuscatedPlayersSetting;
+    private Configuration config;
 
-    public static boolean enableShaders()
+    public boolean enableShaders()
     {
-        return INSTANCE.enableShaders;
+        return enableShaders;
     }
-    public static List<String> getObfuscatedPlayers()
+    public List<String> getObfuscatedPlayers()
     {
-        return INSTANCE.obfuscatedPlayers;
+        return obfuscatedPlayers;
     }
 
-    public static boolean addObfuscatedPlayer(String playerName) {
-        if (INSTANCE.obfuscatedPlayers.contains(playerName)) {
+    public boolean addObfuscatedPlayer(String playerName) {
+        if (obfuscatedPlayers.contains(playerName)) {
             return false;
         }
-        INSTANCE.obfuscatedPlayers.add(playerName);
-        String[] players = INSTANCE.obfuscatedPlayers.toArray(new String[INSTANCE.obfuscatedPlayers.size()]);
-        INSTANCE.obfuscatedPlayersSetting.setValues(players);
+        obfuscatedPlayers.add(playerName);
+        updateConfig();
         return true;
     }
 
-    public static boolean removeObfuscatedPlayer(String playerName) {
-        if (!INSTANCE.obfuscatedPlayers.contains(playerName)) {
+    public boolean removeObfuscatedPlayer(String playerName) {
+        if (!obfuscatedPlayers.contains(playerName)) {
             return false;
         }
-        INSTANCE.obfuscatedPlayers.remove(playerName);
-        String[] players = INSTANCE.obfuscatedPlayers.toArray(new String[INSTANCE.obfuscatedPlayers.size()]);
-        INSTANCE.obfuscatedPlayersSetting.setValues(players);
+        obfuscatedPlayers.remove(playerName);
+        updateConfig();
         return true;
+    }
+
+    private void updateConfig()
+    {
+        String[] players = obfuscatedPlayers.toArray(new String[obfuscatedPlayers.size()]);
+        obfuscatedPlayersSetting.setValues(players);
+        config.save();
     }
 
     public static void syncConfig(Configuration config)
     {
+        INSTANCE.config = config;
         INSTANCE.obfuscatedPlayersSetting = config.get("corruptedPlayers", CATEGORY, new String[0], "List of players to corrupt");
         INSTANCE.enableShaders = config.getBoolean("enableShaders", CATEGORY, true, "Render players as corrupted");
         INSTANCE.obfuscatedPlayers = Lists.newArrayList(INSTANCE.obfuscatedPlayersSetting.getStringList());
