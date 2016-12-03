@@ -1,5 +1,6 @@
 package com.github.atomicblom.nullplayerexception.configuration;
 
+import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Lists;
 import net.minecraftforge.common.config.Configuration;
 import net.minecraftforge.common.config.Property;
@@ -22,32 +23,55 @@ public enum Settings
     {
         return enableShaders;
     }
-    public List<String> getObfuscatedPlayers()
+    public ImmutableList<String> getObfuscatedPlayers()
     {
-        return obfuscatedPlayers;
+        synchronized (obfuscatedPlayersSetting)
+        {
+            final String[] players = obfuscatedPlayers.toArray(new String[obfuscatedPlayers.size()]);
+            return ImmutableList.copyOf(obfuscatedPlayers);
+        }
     }
 
     public boolean addObfuscatedPlayer(String playerName) {
-        if (obfuscatedPlayers.contains(playerName)) {
-            return false;
+        synchronized (obfuscatedPlayersSetting)
+        {
+            if (obfuscatedPlayers.contains(playerName))
+            {
+                return false;
+            }
+            obfuscatedPlayers.add(playerName);
+            updateConfig();
+            return true;
         }
-        obfuscatedPlayers.add(playerName);
-        updateConfig();
-        return true;
     }
 
     public boolean removeObfuscatedPlayer(String playerName) {
-        if (!obfuscatedPlayers.contains(playerName)) {
-            return false;
+        synchronized (obfuscatedPlayersSetting)
+        {
+            final String lowercaseName = playerName.toLowerCase();
+            final String[] players = obfuscatedPlayers.toArray(new String[obfuscatedPlayers.size()]);
+
+            boolean madeAChange = false;
+            for (final String obfuscatedPlayer : players)
+            {
+                if (obfuscatedPlayer.toLowerCase().equals(lowercaseName))
+                {
+                    obfuscatedPlayers.remove(obfuscatedPlayer);
+                    madeAChange = true;
+                }
+            }
+
+            if (madeAChange)
+            {
+                updateConfig();
+            }
+            return madeAChange;
         }
-        obfuscatedPlayers.remove(playerName);
-        updateConfig();
-        return true;
     }
 
     private void updateConfig()
     {
-        String[] players = obfuscatedPlayers.toArray(new String[obfuscatedPlayers.size()]);
+        final String[] players = obfuscatedPlayers.toArray(new String[obfuscatedPlayers.size()]);
         obfuscatedPlayersSetting.setValues(players);
         config.save();
     }
