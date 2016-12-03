@@ -4,10 +4,7 @@ import com.github.atomicblom.nullplayerexception.Logger;
 import com.github.atomicblom.nullplayerexception.NullPlayerExceptionMod;
 import com.github.atomicblom.nullplayerexception.common.networking.PlayerCorruptionChangedMessage;
 import com.github.atomicblom.nullplayerexception.configuration.Settings;
-import net.minecraft.command.CommandBase;
-import net.minecraft.command.CommandException;
-import net.minecraft.command.ICommandSender;
-import net.minecraft.command.WrongUsageException;
+import net.minecraft.command.*;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.util.math.BlockPos;
 
@@ -37,12 +34,18 @@ public class CorruptPlayerCommand extends CommandBase{
         if (args.length != 1) {
             throw new WrongUsageException("commands.npe.corrupt.usage");
         }
+        String playerName;
+        try {
+            playerName = getPlayerName(server, sender, args[0]);
+        } catch (PlayerNotFoundException e) {
+            playerName = args[0];
+        }
 
-        if (!Settings.INSTANCE.addObfuscatedPlayer(args[0])) {
-            Logger.warning("Attempt to mark %s as corrupted, but they were already corrupt.", args[0]);
+        if (!Settings.INSTANCE.addObfuscatedPlayer(playerName)) {
+            Logger.warning("Attempt to mark %s as corrupted, but they were already corrupt.", playerName);
         } else {
-            Logger.info("%s was marked as corrupted.", args[0]);
-            NullPlayerExceptionMod.CHANNEL.sendToAll(new PlayerCorruptionChangedMessage(args[0], true));
+            Logger.info("%s was marked as corrupted.", playerName);
+            NullPlayerExceptionMod.CHANNEL.sendToAll(new PlayerCorruptionChangedMessage(playerName, true));
         }
     }
 

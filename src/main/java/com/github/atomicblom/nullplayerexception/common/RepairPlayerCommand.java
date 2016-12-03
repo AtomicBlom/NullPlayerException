@@ -4,10 +4,7 @@ import com.github.atomicblom.nullplayerexception.Logger;
 import com.github.atomicblom.nullplayerexception.NullPlayerExceptionMod;
 import com.github.atomicblom.nullplayerexception.common.networking.PlayerCorruptionChangedMessage;
 import com.github.atomicblom.nullplayerexception.configuration.Settings;
-import net.minecraft.command.CommandBase;
-import net.minecraft.command.CommandException;
-import net.minecraft.command.ICommandSender;
-import net.minecraft.command.WrongUsageException;
+import net.minecraft.command.*;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.util.math.BlockPos;
 
@@ -38,12 +35,19 @@ public class RepairPlayerCommand extends CommandBase {
             throw new WrongUsageException("commands.npe.repair.usage");
         }
 
-        if (!Settings.INSTANCE.removeObfuscatedPlayer(args[0])) {
-            Logger.warning("Attempt to mark %s as not corrupted, but they weren't in the list of corrupted players.", args[0]);
-            notifyCommandListener(sender, this, "commands.npe.repair.playernotcorrupted", args[0]);
+        String playerName;
+        try {
+            playerName = getPlayerName(server, sender, args[0]);
+        } catch (PlayerNotFoundException e) {
+            playerName = args[0];
+        }
+
+        if (!Settings.INSTANCE.removeObfuscatedPlayer(playerName)) {
+            Logger.warning("Attempt to mark %s as not corrupted, but they weren't in the list of corrupted players.", playerName);
+            notifyCommandListener(sender, this, "commands.npe.repair.playernotcorrupted", playerName);
         } else {
-            Logger.info("Marked %s as no longer corrupted.", args[0]);
-            NullPlayerExceptionMod.CHANNEL.sendToAll(new PlayerCorruptionChangedMessage(args[0], false));
+            Logger.info("Marked %s as no longer corrupted.", playerName);
+            NullPlayerExceptionMod.CHANNEL.sendToAll(new PlayerCorruptionChangedMessage(playerName, false));
         }
     }
 
