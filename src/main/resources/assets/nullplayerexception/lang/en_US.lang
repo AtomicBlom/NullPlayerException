@@ -1,0 +1,3 @@
+commands.npe.repair.usage=npeRepair [username]
+commands.npe.repair.playernotcorrupted=Player %s is not corrupted
+commands.npe.corrupt.usage=npeCorrupt [username]
